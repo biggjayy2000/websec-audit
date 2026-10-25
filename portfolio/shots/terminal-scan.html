@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>websec-audit - demo assessment</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: #eef1f5;
+    font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+    padding: 26px 28px;
+  }
+  .window {
+    background: #0d1117;
+    border-radius: 10px;
+    box-shadow: 0 18px 40px rgba(16, 24, 40, .28);
+    overflow: hidden;
+    border: 1px solid #1c2431;
+  }
+  .titlebar {
+    display: flex; align-items: center; gap: 9px;
+    background: #161d29; padding: 10px 14px; border-bottom: 1px solid #222c3a;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+  .title { color: #8b98a9; font-size: 12px; margin-left: 8px; letter-spacing: .2px; }
+  .screen {
+    margin: 0; padding: 16px 18px 20px;
+    color: #c9d1d9; font-size: 12.6px; line-height: 1.42;
+    white-space: pre; overflow: hidden;
+  }
+  .sev-critical { color: #e879f9; font-weight: 700; }
+  .sev-high { color: #ff7b72; font-weight: 700; }
+  .sev-medium { color: #e3b341; font-weight: 700; }
+  .sev-low { color: #56d4dd; font-weight: 700; }
+  .sev-info { color: #d2d8e0; font-weight: 700; }
+  .dim { color: #6e7d90; }
+</style></head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="title">websec-audit - demo assessment</span>
+  </div>
+  <pre class="screen">websec-audit - authorized, passive web security assessment
+Only scan what you are authorized to test.
+
+
+  Target   http://127.0.0.1:8000/
+  Scanned  2026-10-25 08:03:25  (1.4s, 9 requests)
+
+  <span class="sev-critical">Critical 0</span>  <span class="sev-high">High 6</span>  <span class="sev-medium">Medium 6</span>  <span class="sev-low">Low 4</span>  <span class="sev-info">Info 1</span>
+
+  <span class="sev-high">[  High  ]</span> COOK-001  Cookie set without the Secure flag
+             Set-Cookie without Secure: sessionid
+  <span class="sev-high">[  High  ]</span> CORS-001  CORS reflects any Origin with credentials
+             Origin: https://origin-probe.invalid -&gt; Access-Control-Allow-Origin: https://origin-probe.invalid; Access-Control-Allow-Credentials: true
+  <span class="sev-high">[  High  ]</span> DISC-101  Exposed Git repository
+             GET /.git/HEAD -&gt; HTTP 200, body: 'ref: refs/heads/main'
+  <span class="sev-high">[  High  ]</span> DISC-102  Exposed environment file (.env)
+             GET /.env -&gt; HTTP 200, body: 'DB_PASSWORD=demo-password SECRET_KEY=demo-key'
+  <span class="sev-high">[  High  ]</span> DISC-106  Backup archive reachable
+             GET /backup.zip -&gt; HTTP 200, body: '50 4b 03 04 64 65 6d 6f 2d 61 72 63'
+  <span class="sev-high">[  High  ]</span> TLS-001  Site served over plain HTTP
+             Target scheme is http.
+  <span class="sev-medium">[ Medium ]</span> COOK-002  Cookie set without HttpOnly
+             Set-Cookie without HttpOnly: sessionid
+  <span class="sev-medium">[ Medium ]</span> DISC-020  Directory listing enabled
+             Root response body contains an 'Index of /' title.
+  <span class="sev-medium">[ Medium ]</span> DISC-103  Apache server-status page exposed
+             GET /server-status -&gt; HTTP 200, body: '&lt;h1&gt;Apache Server Status&lt;/h1&gt;'
+  <span class="sev-medium">[ Medium ]</span> HDR-010  Content-Security-Policy header missing
+             No Content-Security-Policy header on the response.
+  <span class="sev-medium">[ Medium ]</span> HDR-020  No framing protection (clickjacking)
+             Neither X-Frame-Options nor a CSP frame-ancestors directive was present.
+  <span class="sev-medium">[ Medium ]</span> METH-001  TRACE method enabled
+             Allow: GET, POST, OPTIONS, TRACE
+  <span class="sev-low">[  Low   ]</span> COOK-003  Cookie set without SameSite
+             Set-Cookie without SameSite: sessionid
+  <span class="sev-low">[  Low   ]</span> DISC-001  Server software and version disclosed
+             Server: BaseHTTP Python/3.15.0; X-Powered-By: PHP/7.4.3
+  <span class="sev-low">[  Low   ]</span> HDR-030  X-Content-Type-Options header missing
+             No X-Content-Type-Options header.
+  <span class="sev-low">[  Low   ]</span> HDR-040  Referrer-Policy header missing
+             No Referrer-Policy header.
+  <span class="sev-info">[  Info  ]</span> HDR-050  Permissions-Policy header missing
+             No Permissions-Policy header.
+
+Markdown report written to portfolio/report-from-scan.md</pre>
+</div>
+</body></html>

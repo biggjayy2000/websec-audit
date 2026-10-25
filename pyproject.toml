@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "websec-audit"
+version = "1.0.0"
+description = "Dependency-free, passive web security assessment for authorized testing"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["security", "owasp", "penetration-testing", "headers", "tls"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Topic :: Security",
+  "Operating System :: OS Independent",
+]
+
+[project.scripts]
+websec-audit = "websec_audit.cli:main"
+
+[tool.setuptools]
+packages = ["websec_audit", "websec_audit.checks"]

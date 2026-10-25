@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>websec-audit — Josiah Shields</title>
+<meta name="description" content="A Python web security scanner that stays in scope and writes the report a tester actually hands over.">
+<style>
+  :root {
+    --ink: #101828;
+    --body: #344054;
+    --muted: #667085;
+    --line: #e4e7ec;
+    --accent: #0f766e;
+    --accent-soft: #e6f4f1;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --high: #b42318;
+    --medium: #8a5a00;
+    --low: #0e6b74;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--body);
+    font-family: "Segoe UI", system-ui, -apple-system, Calibri, Arial, sans-serif;
+    font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 72px 0 44px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 14px;
+  }
+  h1 { font-size: clamp(38px, 6vw, 58px); line-height: 1.04; letter-spacing: -1.4px; color: var(--ink); margin: 0 0 18px; }
+  .lede { font-size: clamp(18px, 2.4vw, 21px); color: var(--body); max-width: 42ch; margin: 0 0 30px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 30px; padding: 0; list-style: none; }
+  .stats li {
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 15px; font-size: 14px; color: var(--body);
+  }
+  .stats b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 9px; text-decoration: none;
+    font-size: 15px; font-weight: 600; border: 1px solid transparent;
+  }
+  .btn.primary { background: var(--ink); color: #fff; }
+  .btn.primary:hover { background: #1d2939; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: #cfd4dc; }
+  .btn.ghost:hover { background: #fff; border-color: #98a2b3; }
+
+  /* ---------- sections ---------- */
+  section { padding: 44px 0; }
+  /* .wrap sets horizontal padding, so sections need their own vertical rhythm declared at equal specificity */
+  section.wrap { padding: 44px 28px; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; }
+  h2 { font-size: 13px; letter-spacing: 1.3px; text-transform: uppercase; color: var(--muted); margin: 0; font-weight: 700; }
+  .rule { flex: 1; height: 1px; background: var(--line); }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 22px 22px 20px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 16.5px; color: var(--ink); letter-spacing: -.2px; }
+  .card p { margin: 0; font-size: 15px; }
+  .card code, .lede code, .quote code {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px;
+    background: #f2f4f7; border: 1px solid #e4e7ec; border-radius: 4px; padding: 1px 5px; color: #344054;
+  }
+  .num { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .5px; display: block; margin-bottom: 6px; }
+
+  /* ---------- figures ---------- */
+  figure { margin: 0; }
+  .shot {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 10px; box-shadow: 0 14px 34px rgba(16, 24, 40, .08);
+  }
+  .shot img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  figcaption { font-size: 13.5px; color: var(--muted); margin-top: 12px; padding-left: 2px; }
+  figcaption b { color: var(--body); }
+
+  .quote {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 34px 0 0;
+    font-size: 18px; color: #114b45; max-width: 62ch;
+  }
+  .quote span { display: block; font-size: 13.5px; color: #4b6b67; margin-top: 8px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; align-items: start; }
+
+  ul.ticks { list-style: none; padding: 0; margin: 0; }
+  ul.ticks li { position: relative; padding-left: 26px; margin-bottom: 12px; font-size: 15.5px; }
+  ul.ticks li::before {
+    content: ""; position: absolute; left: 4px; top: 10px;
+    width: 8px; height: 8px; border-radius: 2px; background: var(--accent);
+  }
+  ul.ticks li b { color: var(--ink); }
+  ul.mini { list-style: none; padding: 0; margin: 20px 0 0; }
+  ul.mini li { position: relative; padding-left: 20px; margin-bottom: 9px; font-size: 14px; }
+  ul.mini li::before {
+    content: ""; position: absolute; left: 2px; top: 9px;
+    width: 6px; height: 6px; border-radius: 50%; background: #c4cad3;
+  }
+  ul.mini b { color: var(--ink); }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+  .split p { margin: 0 0 10px; font-size: 15.5px; }
+  .split h3 { font-size: 16px; color: var(--ink); margin: 0 0 8px; }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--line); margin-top: 26px; padding: 34px 0 54px; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; align-items: baseline; }
+  .foot .name { color: var(--ink); font-weight: 700; font-size: 17px; }
+  .foot .role { color: var(--muted); font-size: 14px; display: block; font-weight: 400; margin-top: 2px; }
+  .foot nav { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14.5px; }
+  .foot nav a { text-decoration: none; }
+  .foot nav a:hover { text-decoration: underline; }
+
+  @media (max-width: 860px) {
+    .cards, .grid-2, .split { grid-template-columns: 1fr; }
+    .hero { padding-top: 52px; }
+  }
+  @media print {
+    .actions, .foot nav { display: none; }
+    body { background: #fff; }
+    section { padding: 22px 0; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero wrap">
+  <p class="eyebrow">Security tooling &middot; Python</p>
+  <h1>websec-audit</h1>
+  <p class="lede">A web security scanner that refuses to run out of scope — and writes the report a tester actually hands over.</p>
+
+  <ul class="stats">
+    <li><b>17</b> findings on a demo target</li>
+    <li><b>53</b> tests passing</li>
+    <li><b>7</b> check families</li>
+    <li><b>0</b> dependencies</li>
+  </ul>
+
+  <div class="actions">
+    <!-- TODO: point this at the repository once it is published -->
+    <a class="btn primary" href="#" title="Add your repository URL here">View the code</a>
+    <a class="btn ghost" href="../docs/WRITEUP.md">Build writeup</a>
+    <a class="btn ghost" href="https://drive.google.com/drive/folders/1srtrsu9i6lvEGg4dojatligUGTaoswh3?usp=sharing">Full portfolio</a>
+  </div>
+</header>
+
+<section class="wrap">
+  <div class="section-head"><h2>What it does</h2><div class="rule"></div></div>
+  <div class="cards">
+    <article class="card">
+      <span class="num">01</span>
+      <h3>Finds the usual mistakes</h3>
+      <p>Missing CSP and HSTS, session cookies without <code>Secure</code> or <code>HttpOnly</code>, obsolete
+        TLS, <code>.git</code> and <code>.env</code> left in the web root, TRACE enabled, CORS that trusts any origin.</p>
+    </article>
+    <article class="card">
+      <span class="num">02</span>
+      <h3>Stops before it starts</h3>
+      <p>Resolves the hostname and refuses anything out of scope <em>before the first request</em>. Loopback by
+        default; <code>--allow-private</code> for labs, <code>--authorize</code> for hosts you have written permission to test.</p>
+    </article>
+    <article class="card">
+      <span class="num">03</span>
+      <h3>Writes something readable</h3>
+      <p>Severity-ranked findings with quoted evidence, why it matters, and the fix. Markdown and JSON out,
+        plus an exit code that works as a CI gate.</p>
+    </article>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="section-head"><h2>A real run</h2><div class="rule"></div></div>
+  <figure>
+    <div class="shot">
+      <img src="screenshots/terminal-scan.png" alt="Terminal output of websec-audit scanning the demo server: six High, six Medium, four Low and one Info findings">
+    </div>
+    <figcaption><b>Scanning the included demo server.</b> Seventeen findings in about a second and a half, nine
+      requests. The evidence is quoted, not summarised — the <code>.env</code> finding shows the line it read.</figcaption>
+  </figure>
+
+  <div class="quote">
+    &ldquo;A finding nobody else can reproduce is just an opinion.&rdquo;
+    <span>Why each finding carries the bytes that matched, not just a title.</span>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="section-head"><h2>The output</h2><div class="rule"></div></div>
+  <div class="grid-2">
+    <figure>
+      <div class="shot">
+        <img src="screenshots/report-top.png" alt="Rendered Markdown report showing a severity summary table and findings with evidence and remediation">
+      </div>
+      <figcaption><b>The deliverable.</b> A severity table, then each finding with evidence, impact, remediation and
+        an OWASP reference. <a href="shots/report.html">Read the full report</a>.</figcaption>
+    </figure>
+    <div>
+      <figure>
+        <div class="shot">
+          <img src="screenshots/terminal-tests.png" alt="Test output showing 53 tests passing">
+        </div>
+        <figcaption><b>53 tests, including one that scans a real misconfigured server over a socket.</b> That
+          end-to-end test caught two defects unit tests missed.</figcaption>
+      </figure>
+      <ul class="mini">
+        <li><b>Scope guard</b> &mdash; six tests, including &ldquo;public target refused by default&rdquo;</li>
+        <li><b>Every check</b> &mdash; a clean case and a broken case</li>
+        <li><b>Reports</b> &mdash; ordering, counts, JSON round-trip</li>
+        <li><b>End to end</b> &mdash; one test scans a real socket</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="section-head"><h2>Under the hood</h2><div class="rule"></div></div>
+  <div class="split">
+    <div>
+      <h3>Standard library only</h3>
+      <p><code>urllib</code>, <code>ssl</code>, <code>socket</code>. Nothing to install, which means it runs on any
+        machine that has Python — including a locked-down work laptop.</p>
+      <h3 style="margin-top:22px">Checks are functions</h3>
+      <p>Each check takes a context and returns findings. Adding one is a single function, and every one is
+        testable without mocking a network stack.</p>
+    </div>
+    <div>
+      <h3>Scope is enforced in code</h3>
+      <p>The guard resolves the target and runs before the session is created, so a hostname pointing at a public
+        address is refused even if it looks local.</p>
+      <h3 style="margin-top:22px">Honest limits</h3>
+      <p>Passive only, one URL per run, no authenticated scanning, and severity is a judgement baked into each
+        check rather than a CVSS score.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="foot">
+    <div>
+      <span class="name">Josiah Shields</span>
+      <span class="role">Junior penetration tester &middot; entry-level cybersecurity</span>
+    </div>
+    <nav>
+      <a href="mailto:shieldsjay1117@gmail.com">shieldsjay1117@gmail.com</a>
+      <a href="https://linkedin.com/in/josiah-shields-3a095243a">LinkedIn</a>
+      <a href="https://drive.google.com/drive/folders/1srtrsu9i6lvEGg4dojatligUGTaoswh3?usp=sharing">Portfolio</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

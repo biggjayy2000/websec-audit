@@ -1,0 +1,169 @@
+{
+  "target": "http://127.0.0.1:8747/",
+  "started": "2026-10-25 07:55:22",
+  "duration_seconds": 1.4,
+  "requests": 9,
+  "counts": {
+    "Critical": 0,
+    "High": 6,
+    "Medium": 6,
+    "Low": 4,
+    "Info": 1
+  },
+  "errors": [],
+  "findings": [
+    {
+      "check_id": "COOK-001",
+      "title": "Cookie set without the Secure flag",
+      "severity": "High",
+      "detail": "A cookie without Secure is sent over plain HTTP as well, so anyone on the path can read it. For a session identifier that means account takeover.",
+      "evidence": "Set-Cookie without Secure: sessionid",
+      "remediation": "Add 'Secure' to every cookie, and serve the whole site over HTTPS. Session cookies in particular must never travel unencrypted.",
+      "reference": "OWASP Session Management Cheat Sheet"
+    },
+    {
+      "check_id": "CORS-001",
+      "title": "CORS reflects any Origin with credentials",
+      "severity": "High",
+      "detail": "The app echoes back whatever Origin the caller sends and permits credentials. Any site can therefore make authenticated cross-origin requests on behalf of a logged-in user and read the response - which is a complete bypass of the same-origin policy.",
+      "evidence": "Origin: https://origin-probe.invalid -> Access-Control-Allow-Origin: https://origin-probe.invalid; Access-Control-Allow-Credentials: true",
+      "remediation": "Allow-list specific trusted origins server-side; never reflect the incoming Origin. Do not combine a wildcard or reflected origin with credentials.",
+      "reference": "OWASP WSTG: Test Cross Origin Resource Sharing"
+    },
+    {
+      "check_id": "DISC-101",
+      "title": "Exposed Git repository",
+      "severity": "High",
+      "detail": "The repository metadata is readable, which usually allows the full source history - including credentials and secrets that were deleted from the current code - to be recovered.",
+      "evidence": "GET /.git/HEAD -> HTTP 200, body: 'ref: refs/heads/main'",
+      "remediation": "Block dotfiles at the web server, remove the .git directory from the document root, and rotate any secret that was ever committed.",
+      "reference": "OWASP WSTG: Review Webpage Content for Information Leakage"
+    },
+    {
+      "check_id": "DISC-102",
+      "title": "Exposed environment file (.env)",
+      "severity": "High",
+      "detail": "Environment files normally hold database passwords, API keys, and signing secrets; readable from the web they hand an attacker the keys to the application.",
+      "evidence": "GET /.env -> HTTP 200, body: 'DB_PASSWORD=demo-password SECRET_KEY=demo-key'",
+      "remediation": "Move .env outside the document root, deny the path at the server, and rotate every credential it contained.",
+      "reference": "OWASP WSTG: Review Webpage Content for Information Leakage"
+    },
+    {
+      "check_id": "DISC-106",
+      "title": "Backup archive reachable",
+      "severity": "High",
+      "detail": "A downloadable backup typically contains source code, configuration, and database dumps - often the fastest route from a web request to full compromise.",
+      "evidence": "GET /backup.zip -> HTTP 200, body: '50 4b 03 04 64 65 6d 6f 2d 61 72 63'",
+      "remediation": "Store backups outside the web root and require authentication for any download route.",
+      "reference": "OWASP WSTG: Review Webpage Content for Information Leakage"
+    },
+    {
+      "check_id": "TLS-001",
+      "title": "Site served over plain HTTP",
+      "severity": "High",
+      "detail": "Everything on this connection - credentials, session cookies, page content - is readable and modifiable by anyone positioned on the path.",
+      "evidence": "Target scheme is http.",
+      "remediation": "Serve the site over HTTPS only, redirect port 80 to 443, and add HSTS once the redirect has been verified.",
+      "reference": "OWASP Transport Layer Security Cheat Sheet"
+    },
+    {
+      "check_id": "COOK-002",
+      "title": "Cookie set without HttpOnly",
+      "severity": "Medium",
+      "detail": "Without HttpOnly, JavaScript can read the cookie. Every cross-site scripting bug then becomes session theft rather than a scripted alert.",
+      "evidence": "Set-Cookie without HttpOnly: sessionid",
+      "remediation": "Add 'HttpOnly' to any cookie the browser scripting layer does not need.",
+      "reference": "OWASP Session Management Cheat Sheet"
+    },
+    {
+      "check_id": "DISC-020",
+      "title": "Directory listing enabled",
+      "severity": "Medium",
+      "detail": "The server prints an index of the directory, which exposes files that were never meant to be browsed - drafts, exports, and old backups.",
+      "evidence": "Root response body contains an 'Index of /' title.",
+      "remediation": "Disable auto-indexing (Options -Indexes in Apache, autoindex off in nginx).",
+      "reference": "OWASP WSTG: Directory Traversal and File Include"
+    },
+    {
+      "check_id": "DISC-103",
+      "title": "Apache server-status page exposed",
+      "severity": "Medium",
+      "detail": "The status page lists active requests and client addresses, which reveals internal URLs, traffic patterns, and sometimes other users' activity.",
+      "evidence": "GET /server-status -> HTTP 200, body: '<h1>Apache Server Status</h1>'",
+      "remediation": "Restrict /server-status to localhost, or disable mod_status in production.",
+      "reference": "OWASP WSTG: Review Webpage Content for Information Leakage"
+    },
+    {
+      "check_id": "HDR-010",
+      "title": "Content-Security-Policy header missing",
+      "severity": "Medium",
+      "detail": "CSP is the main browser-side control against cross-site scripting and injected third-party script. Without it, a single unescaped parameter is usually enough for script execution.",
+      "evidence": "No Content-Security-Policy header on the response.",
+      "remediation": "Start with a report-only policy ('Content-Security-Policy-Report-Only') to find inline scripts, then enforce 'default-src 'self'' with explicit allow-lists.",
+      "reference": "OWASP Content Security Policy Cheat Sheet"
+    },
+    {
+      "check_id": "HDR-020",
+      "title": "No framing protection (clickjacking)",
+      "severity": "Medium",
+      "detail": "With no X-Frame-Options and no CSP frame-ancestors directive, this page can be loaded inside an attacker's iframe and used to trick a logged-in user into clicking something they did not intend.",
+      "evidence": "Neither X-Frame-Options nor a CSP frame-ancestors directive was present.",
+      "remediation": "Send 'X-Frame-Options: DENY' (or SAMEORIGIN if framing is needed), and add 'frame-ancestors 'none'' to the CSP for modern browsers.",
+      "reference": "OWASP Clickjacking Defense Cheat Sheet"
+    },
+    {
+      "check_id": "METH-001",
+      "title": "TRACE method enabled",
+      "severity": "Medium",
+      "detail": "TRACE echoes the request back to the caller. Combined with a scripting weakness it lets an attacker read cookies and authentication headers that the browser attaches.",
+      "evidence": "Allow: GET, POST, OPTIONS, TRACE",
+      "remediation": "Disable TRACE at the server (TraceEnable off in Apache) and advertise only the methods the app uses.",
+      "reference": "OWASP WSTG: Test HTTP Methods"
+    },
+    {
+      "check_id": "COOK-003",
+      "title": "Cookie set without SameSite",
+      "severity": "Low",
+      "detail": "Cookies with no SameSite attribute are sent on cross-site requests in older browser behaviour, which weakens the default defence against cross-site request forgery.",
+      "evidence": "Set-Cookie without SameSite: sessionid",
+      "remediation": "Add 'SameSite=Lax' (or Strict) and set SameSite=None only when a cross-site flow truly needs it.",
+      "reference": "OWASP Session Management Cheat Sheet"
+    },
+    {
+      "check_id": "DISC-001",
+      "title": "Server software and version disclosed",
+      "severity": "Low",
+      "detail": "Not exploitable on its own, but it tells an attacker which known vulnerabilities to try first and saves them the reconnaissance.",
+      "evidence": "Server: BaseHTTP Python/3.15.0; X-Powered-By: PHP/7.4.3",
+      "remediation": "Suppress version strings (ServerTokens Prod, expose_php Off) or front the app with a proxy that normalises headers.",
+      "reference": "OWASP WSTG: Fingerprint Web Server"
+    },
+    {
+      "check_id": "HDR-030",
+      "title": "X-Content-Type-Options header missing",
+      "severity": "Low",
+      "detail": "Browsers may sniff a response into a different type than declared, which is how an uploaded image can be executed as HTML or script.",
+      "evidence": "No X-Content-Type-Options header.",
+      "remediation": "Send 'X-Content-Type-Options: nosniff' on every response.",
+      "reference": "OWASP Secure Headers Project"
+    },
+    {
+      "check_id": "HDR-040",
+      "title": "Referrer-Policy header missing",
+      "severity": "Low",
+      "detail": "By default the full URL of this page can leak to third parties in the Referer header, including query strings that sometimes carry tokens or identifiers.",
+      "evidence": "No Referrer-Policy header.",
+      "remediation": "Send 'Referrer-Policy: strict-origin-when-cross-origin' as a sensible default.",
+      "reference": "OWASP Secure Headers Project"
+    },
+    {
+      "check_id": "HDR-050",
+      "title": "Permissions-Policy header missing",
+      "severity": "Info",
+      "detail": "Optional hardening: without it, embedded third-party frames inherit access to camera, microphone, and geolocation unless each is explicitly denied.",
+      "evidence": "No Permissions-Policy header.",
+      "remediation": "Deny features the site does not use, e.g. 'camera=(), microphone=(), geolocation=()'.",
+      "reference": "OWASP Secure Headers Project"
+    }
+  ]
+}

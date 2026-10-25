@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Scan output: reports can contain internal hostnames and should not be committed
+report.md
+report.json

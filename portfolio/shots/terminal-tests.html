@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>websec-audit - test suite</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: #eef1f5;
+    font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+    padding: 26px 28px;
+  }
+  .window {
+    background: #0d1117;
+    border-radius: 10px;
+    box-shadow: 0 18px 40px rgba(16, 24, 40, .28);
+    overflow: hidden;
+    border: 1px solid #1c2431;
+  }
+  .titlebar {
+    display: flex; align-items: center; gap: 9px;
+    background: #161d29; padding: 10px 14px; border-bottom: 1px solid #222c3a;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+  .title { color: #8b98a9; font-size: 12px; margin-left: 8px; letter-spacing: .2px; }
+  .screen {
+    margin: 0; padding: 16px 18px 20px;
+    color: #c9d1d9; font-size: 12.6px; line-height: 1.42;
+    white-space: pre; overflow: hidden;
+  }
+  .sev-critical { color: #e879f9; font-weight: 700; }
+  .sev-high { color: #ff7b72; font-weight: 700; }
+  .sev-medium { color: #e3b341; font-weight: 700; }
+  .sev-low { color: #56d4dd; font-weight: 700; }
+  .sev-info { color: #d2d8e0; font-weight: 700; }
+  .dim { color: #6e7d90; }
+</style></head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="title">websec-audit - test suite</span>
+  </div>
+  <pre class="screen">test_loopback_is_always_in_scope (tests.test_scope.ScopeTests.test_loopback_is_always_in_scope) ... ok
+test_private_range_needs_its_own_flag (tests.test_scope.ScopeTests.test_private_range_needs_its_own_flag) ... ok
+test_public_target_allowed_with_explicit_authorization (tests.test_scope.ScopeTests.test_public_target_allowed_with_explicit_authorization) ... ok
+test_public_target_is_refused_by_default (tests.test_scope.ScopeTests.test_public_target_is_refused_by_default) ... ok
+test_unresolvable_host_is_reported_not_scanned (tests.test_scope.ScopeTests.test_unresolvable_host_is_reported_not_scanned) ... ok
+test_bad_scheme_is_rejected (tests.test_scope.TargetParsingTests.test_bad_scheme_is_rejected) ... ok
+test_bare_hostname_defaults_to_https (tests.test_scope.TargetParsingTests.test_bare_hostname_defaults_to_https) ... ok
+test_base_omits_default_port (tests.test_scope.TargetParsingTests.test_base_omits_default_port) ... ok
+test_explicit_http_port_and_path_are_preserved (tests.test_scope.TargetParsingTests.test_explicit_http_port_and_path_are_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 53 tests in 0.588s
+
+OK</pre>
+</div>
+</body></html>

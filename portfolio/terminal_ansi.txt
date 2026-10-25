@@ -1,0 +1,45 @@
+websec-audit - authorized, passive web security assessment
+Only scan what you are authorized to test.
+
+
+  Target   http://127.0.0.1:8000/
+  Scanned  2026-10-25 08:03:25  (1.4s, 9 requests)
+
+  [1;35mCritical 0[0m  [1;31mHigh 6[0m  [1;33mMedium 6[0m  [1;36mLow 4[0m  [1;37mInfo 1[0m
+
+  [1;31m[  High  ][0m COOK-001  Cookie set without the Secure flag
+             Set-Cookie without Secure: sessionid
+  [1;31m[  High  ][0m CORS-001  CORS reflects any Origin with credentials
+             Origin: https://origin-probe.invalid -> Access-Control-Allow-Origin: https://origin-probe.invalid; Access-Control-Allow-Credentials: true
+  [1;31m[  High  ][0m DISC-101  Exposed Git repository
+             GET /.git/HEAD -> HTTP 200, body: 'ref: refs/heads/main'
+  [1;31m[  High  ][0m DISC-102  Exposed environment file (.env)
+             GET /.env -> HTTP 200, body: 'DB_PASSWORD=demo-password SECRET_KEY=demo-key'
+  [1;31m[  High  ][0m DISC-106  Backup archive reachable
+             GET /backup.zip -> HTTP 200, body: '50 4b 03 04 64 65 6d 6f 2d 61 72 63'
+  [1;31m[  High  ][0m TLS-001  Site served over plain HTTP
+             Target scheme is http.
+  [1;33m[ Medium ][0m COOK-002  Cookie set without HttpOnly
+             Set-Cookie without HttpOnly: sessionid
+  [1;33m[ Medium ][0m DISC-020  Directory listing enabled
+             Root response body contains an 'Index of /' title.
+  [1;33m[ Medium ][0m DISC-103  Apache server-status page exposed
+             GET /server-status -> HTTP 200, body: '<h1>Apache Server Status</h1>'
+  [1;33m[ Medium ][0m HDR-010  Content-Security-Policy header missing
+             No Content-Security-Policy header on the response.
+  [1;33m[ Medium ][0m HDR-020  No framing protection (clickjacking)
+             Neither X-Frame-Options nor a CSP frame-ancestors directive was present.
+  [1;33m[ Medium ][0m METH-001  TRACE method enabled
+             Allow: GET, POST, OPTIONS, TRACE
+  [1;36m[  Low   ][0m COOK-003  Cookie set without SameSite
+             Set-Cookie without SameSite: sessionid
+  [1;36m[  Low   ][0m DISC-001  Server software and version disclosed
+             Server: BaseHTTP Python/3.15.0; X-Powered-By: PHP/7.4.3
+  [1;36m[  Low   ][0m HDR-030  X-Content-Type-Options header missing
+             No X-Content-Type-Options header.
+  [1;36m[  Low   ][0m HDR-040  Referrer-Policy header missing
+             No Referrer-Policy header.
+  [1;37m[  Info  ][0m HDR-050  Permissions-Policy header missing
+             No Permissions-Policy header.
+
+Markdown report written to portfolio/report-from-scan.md
