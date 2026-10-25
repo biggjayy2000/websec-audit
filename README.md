@@ -37,7 +37,7 @@ what was observed, why it matters, the evidence, and how to fix it.
 Requires Python 3.9+. No third-party packages.
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/biggjayy2000/websec-audit.git
 cd websec-audit
 
 # 1. Start the deliberately insecure demo server
