@@ -5,6 +5,8 @@ things that are usually wrong on a first deployment — missing security headers
 without flags, obsolete TLS, exposed `.git`/`.env` files, verbose errors, dangerous HTTP methods,
 and CORS that trusts everyone — then writes a severity-ranked report with evidence and remediation.
 
+![websec-audit scanning the demo server](portfolio/screenshots/terminal-scan.png)
+
 Built and tested against local targets only. Nothing here exploits anything: every check is an
 ordinary GET or OPTIONS request.
 
